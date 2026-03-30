@@ -18,6 +18,15 @@ const {
   toHook
 } = require('./lib/register')
 
+// Bundlers such as Turbopack use synthetic specifiers of the form
+// "{packageName}-{hexHash}" (e.g. "ai-5e7181a616786b24") instead of the bare
+// package name.  Detect that pattern so the hook-match logic still fires.
+const BUNDLER_MANGLED_RE = /^[0-9a-f]+$/
+function isMangledBundlerSpecifier (specifier, name, baseDir) {
+  if (!specifier?.startsWith(name + '-') || !baseDir.endsWith(name)) return false
+  return BUNDLER_MANGLED_RE.test(specifier.slice(name.length + 1))
+}
+
 function addHook (hook) {
   importHooks.push(hook)
   toHook.forEach(([name, namespace, specifier]) => hook(name, namespace, specifier))
@@ -167,7 +176,7 @@ function Hook (modules, options, hookFn) {
           if (!baseDir) {
             // built-in module (or unexpected non file:// name?)
             callHookFn(hookFn, namespace, name, baseDir)
-          } else if (baseDir.endsWith(specifiers.get(loadUrl))) {
+          } else if (baseDir.endsWith(specifiers.get(loadUrl)) || isMangledBundlerSpecifier(specifiers.get(loadUrl), name, baseDir)) {
             // An import of the top-level module (e.g. `import 'ioredis'`).
             // Note: Slight behaviour difference from RITM. RITM uses
             // `require.resolve(name)` to see if filename is the module
