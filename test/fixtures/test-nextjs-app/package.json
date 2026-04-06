@@ -1,0 +1,22 @@
+{
+  "name": "test-nextjs-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "camelcase": "8.0.0",
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.57",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
+    "typescript": "5.8.3"
+  }
+}
